@@ -141,6 +141,21 @@ typedef uint16_t (*api_get_fram_addr_from_block_nbr_t)(uint16_t block_offset);
 
 
 
+enum sensor_state_e
+{
+    NOT_STARTED    = 1,
+    WARM_UP        = 2,
+    READY_WORKING  = 3,
+    EXPIRED        = 4,
+    SHUT_DOWN      = 5,
+    FAILURE        = 6 
+};
+
+/* Update sensor state          */
+/* input: new_state             */
+/* return 16 bits address       */
+typedef void (*api_update_sensor_state_t)(uint16_t new_state);
+
 
 #endif
 
