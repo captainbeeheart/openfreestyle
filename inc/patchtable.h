@@ -24,6 +24,6 @@ struct patchtable_T
     uint16_t    padding[2];
 };
 
-
+void patch_cal(void);
 
 #endif
