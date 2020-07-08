@@ -242,7 +242,7 @@ class binary_blob():
         if self.has_legacy_code is True:
             crc_len += self.framlegacy_length
             crc = computeCRC16(self.full_dump[self.framlegacy_offset:], crc_len)
-            print("New code section CRC16 (@ 0x%0.4x - %d)= 0x%0.4x" %(self.framlegacy_offset, crc_len, crc))
+            print("New code section with legacy code CRC16 (@ 0x%0.4x - %d)= 0x%0.4x" %(self.framlegacy_offset, crc_len, crc))
         else:
             crc = computeCRC16(self.full_dump[self.start_offset:], crc_len)
             print("New code section CRC16 (@ 0x%0.4x - %d)= 0x%0.4x" %(self.start_offset, crc_len, crc))
