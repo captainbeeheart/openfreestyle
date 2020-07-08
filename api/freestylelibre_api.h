@@ -137,7 +137,7 @@ typedef  uint16_t (*api_check_rf_header_t)(void);
 /* block number                 */
 /* input: block number          */
 /* return 16 bits address       */
-typedef uint16_t (*api_get_fram_addr_from_block_nbr)(uint16_t block_offset);
+typedef uint16_t (*api_get_fram_addr_from_block_nbr_t)(uint16_t block_offset);
 
 
 
