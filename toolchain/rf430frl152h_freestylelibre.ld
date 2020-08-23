@@ -45,9 +45,7 @@ MEMORY {
 
   /* WARNING modifications in those addresses may impact 'nfc_loader.py  */
   FRAMACCESS (rw)      : ORIGIN = 0xF840, LENGTH = 0x0020 /* END=0xF85F, size 32   - FRAM Radio Write protect section */
-  FRAMHEADER (rw)      : ORIGIN = 0xF860, LENGTH = 0x0018 /* END=0xF877, size 24   - FRAM FreeStyleLibre Header section */
-  FRAMDATA (rw)        : ORIGIN = 0xF878, LENGTH = 0x0128 /* END=0xF99F, size 296  - FRAM FreestyleLibre Data section */
-  FRAMFOOTER (rw)      : ORIGIN = 0xF9A0, LENGTH = 0x0018 /* END=0xF9B7, size 24   - FRAM FreestyleLibre Footer section */
+  FRAMDATA (rw)        : ORIGIN = 0xF860, LENGTH = 0x0158 /* END=0xF9B7, size 344  - FRAM FreestyleLibre Data section */
   FRAMPATCHCODECRC (r) : ORIGIN = 0xF9B8, LENGTH = 0x0002 /* END=0xF9B9, size 2    - FRAM FreestyleLibre patch code section CRC */
   FRAMLEGACYCODE (rx)  : ORIGIN = 0xF9BA, LENGTH = 0x03CC /* END=0xFD86, size 972  - Code Section already used by legacy sensor */
   FRAMPATCHCODE (rwx)  : ORIGIN = 0xFD86, LENGTH = 0x01EA /* END=0xFF6F, size 490  - FRAM FreestyleLibre free patch code section */
@@ -100,6 +98,13 @@ SECTIONS
     KEEP (*(__interrupt_vector_reset))
     KEEP (*(.resetvec))
   } > RESETVEC
+
+
+  .framdata :
+  {
+    . = ALIGN(2);
+    KEEP (*(.framdata))
+  } > FRAMDATA
 
   .frampatchcrc :
   {
