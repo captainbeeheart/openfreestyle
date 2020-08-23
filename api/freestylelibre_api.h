@@ -97,6 +97,12 @@
 /* Functions prototypes */
 /*=======================*/
 
+/* memclr                                     */
+/* input: in, len (bytes)                     */
+/* return: -                                  */
+typedef  uint16_t (*api_memclr_t)(uint8_t *in, uint16_t len);
+
+
 /* check_section_crc16                        */
 /* input: sectionId 0 for header, 1 for data  */
 /* return 0=Ok / 0x0D or 0x0C Error           */
