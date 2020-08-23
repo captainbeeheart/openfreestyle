@@ -4,7 +4,7 @@
 #include "rf430frl152h.h"
 
 uint16_t nfcTestFuncA5(void); 
-
+uint16_t nfcRebirthFuncA6(void); 
 
 
 #endif

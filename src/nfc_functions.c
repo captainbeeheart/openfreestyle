@@ -6,8 +6,10 @@
 // Hello world from FreeStyle Libe NFC function
 
 uint8_t __attribute__ ((section (".frampatch.data"))) helloWorld[] = "Hello from FreeStyle Libre";
+fram_data_t __attribute__ ((section (".framdata"))) fram_data;
 
 
+// Demo function
 uint16_t __attribute__ ((section (".frampatch"))) nfcTestFuncA5(void) 
 {
     volatile uint8_t *pRF13MTXF_L = RF13MTXF_L;
@@ -47,4 +49,49 @@ uint16_t __attribute__ ((section (".frampatch"))) nfcTestFuncA5(void)
 
     // Decoding magic error
     return 0;
+}
+
+
+// The goal of this nfcRebirthFuncA6 function is to give a second life
+// to a dead sensor so it can provides again temperature measurements
+// for about 10 days, regarding to the remaining bettery life.
+uint16_t __attribute__ ((section (".frampatch"))) nfcRebirthFuncA6(void) 
+{
+    api_memclr_t api_memclr = (api_memclr_t)ROM_MEM_CLR_ADDR;
+    volatile uint8_t *pRF13MINT_H = RF13MINT_H;
+    volatile uint8_t *pRF13MTXF_L = RF13MTXF_L;
+    uint8_t *pclean;
+    api_calc_crc16_t api_calc_crc16 = *(api_calc_crc16_t)(RAM_CALC_CRC16_ADDR);
+
+    uint8_t interrupt_sav; 
+
+    // Save and disable interrupt mask:
+    interrupt_sav = *pRF13MINT_H;
+    *pRF13MINT_H = 0;
+
+    // Reset header section:
+    api_memclr(&fram_data.header.warmupFlag, HEADER_TO_RESET_SZ);
+
+    // Reset data section:
+    api_memclr(&fram_data.data.short_term_idx, DATA_TO_RESET_SZ);
+
+    // Reset footer section:
+    // Disable the CRC verification
+    fram_data.footer.bypassChecks = 0x6D;
+    fram_data.header.state = NOT_STARTED;
+
+    // Update data CRCs
+    fram_data.header.crc16 = api_calc_crc16((short int *)&fram_data.header.unk0, (sizeof(fram_header_t)-2)/2);
+    fram_data.data.crc16 = api_calc_crc16((short int *)&fram_data.data.short_term_idx, (sizeof(fram_tables_t)-2)/2);
+    fram_data.footer.crc16 = api_calc_crc16((short int *)&fram_data.footer.unk1, (sizeof(fram_footer_t)-2)/2);
+
+    // Restore interrupt mask:
+    *pRF13MINT_H = interrupt_sav;
+
+    // Return OK to RF
+    *pRF13MTXF_L = 0; // No error
+    *pRF13MTXF_L = 1; // data: OK flag 
+
+    return 1;
+
 }

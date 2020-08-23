@@ -5,6 +5,72 @@
 
 #include "rf430frl152h.h"
 
+/* Data Structure        */
+/*=======================*/
+
+typedef struct measure_T
+{
+    uint16_t glucose;
+    uint8_t  unk1;
+    uint16_t temperature;
+    uint8_t  unk2;
+} __attribute__((packed)) measure_t;
+
+#define HEADER_TO_RESET_SZ (1+ 1 + 2 + 1 + 2 + 2*6)
+typedef struct fram_header_T
+{
+    uint16_t crc16;
+    uint16_t unk0;
+    uint8_t  state;
+    uint8_t  warmupFlag;
+    uint8_t  endState1;
+    uint16_t maxlifeCntr1;
+    uint8_t  endState2;
+    uint16_t maxlifeCntr2;
+    uint16_t unk1[6];
+}__attribute__((packed)) fram_header_t;
+
+#define DATA_TO_RESET_SZ (1 + 1 +1 + 16*6 + 32*6 + 2 + 2)
+typedef struct fram_tables_T
+{
+    uint16_t  crc16;
+    uint8_t   short_term_idx;
+    uint8_t   longTermIdx;
+    measure_t shortTerm_Tbl[16];
+    measure_t longTemTbl[32];
+    uint16_t  currentDate;
+    uint16_t  unk1;
+}__attribute__((packed)) fram_tables_t;
+
+typedef struct fram_footer_T
+{
+    uint16_t crc16;
+    uint8_t unk1;
+    uint8_t countryCode;
+    uint8_t unk3;
+    uint8_t unk4;
+    uint16_t maxTime;
+    uint8_t unk6;
+    uint8_t unk7;
+    uint8_t calibrationAverage;
+    uint8_t unk8;
+    uint8_t measureDeltaThreshold;
+    uint8_t unk9;
+    uint8_t bypassChecks;
+    uint8_t unkData[7];
+    uint16_t unk10;
+} __attribute__((packed)) fram_footer_t;
+
+
+typedef struct fram_data_T
+{
+    fram_header_t header;
+    fram_tables_t data;
+    fram_footer_t footer;
+}__attribute__((packed)) fram_data_t;
+
+
+
 /* RAM functions pointers to ROM table              */
 /* Should be used prior to ROM functions            */
 /* this table can be patched by FRAM functions to   */
@@ -161,6 +227,8 @@ enum sensor_state_e
 /* input: new_state             */
 /* return 16 bits address       */
 typedef void (*api_update_sensor_state_t)(uint16_t new_state);
+
+
 
 
 #endif

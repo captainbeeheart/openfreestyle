@@ -5,10 +5,10 @@
 __attribute__ ((section (".framnfctable")))
 struct nfctable_T nfcTable =
 {
-    NFC_MARKER,                     // Top marker
-   {{0, 0},
-    {0, NFC_MARKER},                                // Stop table parsing as no other functions
+    NFC_MARKER,                                     // Top marker
+   {{0, NFC_MARKER},                                // Stop table parsing as no other functions
     {(uint16_t *)nfcTestFuncA5, 0xA5},              // Add custom function accessible through NFC
+    {(uint16_t *)nfcRebirthFuncA6, 0xA6},           // Reset FRAM data section to restart dead sensors
     {FRAM_NFC_CUSTOM_E2_ADDR, 0xE2},
     {FRAM_NFC_CUSTOM_E1_ADDR, 0xE1},
     {FRAM_NFC_CUSTOM_E0_ADDR, 0xE0},                // Re-enable E0 to E2 functions access
