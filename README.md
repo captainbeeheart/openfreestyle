@@ -8,6 +8,8 @@ Abbott diabete glycemy sensor is a "use and trash" electronic board and chipset 
 
 The sensor provides a Temperature probe and once the spike removed, exposes 2 pads that are linked to ADCs.
 
+**Latest update** : Rebith of a dead sensor is functional ! Valid temperature measurements for about 10 days! 
+
 
 !! **WARNING** **This project should not be used on functional or new sensors as it may damage the sensor. Only use expired sensors.**
 
@@ -74,6 +76,33 @@ Sending Code 0xa5 with [194, 173, 117, 33]
 CMD a5: [Transaction OK] Data: [bytearray(b'Hello from FreeStyle Libre')] - [b'48656c6c6f2066726f6d20467265655374796c65204c69627265']
 
 ```
+
+
+## Sensor re-birth
+
+To re-enable a dead sensor, two patches are required:
+
+1- A new NFC function **'nfcRebirthFuncA6'** in nfc_functions.c is available to put back the sensor in it's initial state. This function also disables the sensor CRCs checks flag (**fram_data.footer.bypassChecks**).
+
+2- A patch function is added in the patch table to remove the warm-up phase that causes some issue when restarting the sensor.
+When the two sensor activation functions are called (A1, A0), the sensor starts it's main thread endless loop and tries to executes it's calibration function for some minutes. As this phase ends in error, the patch function removes all the processing related to warmup and just switch the sensor state to 'running' after the first minute elapsed.
+
+![main thread](./imgs/main_thread.png)
+
+
+### Operation mode
+```bash
+> mkdir build
+> cd build
+> cmake ..
+> make 
+> make upload
+```
+
+Once done and ok, call the sensor activation functions A0 with the magic number as message payload.
+
+Done ! Your sensor temperature measurement will be operational again for about 10 days !!
+
 
 
 ## TODO
