@@ -5,6 +5,10 @@
 
 #include "rf430frl152h.h"
 
+
+#define MIN2HRS 60
+#define HRS2DAYS 24
+
 /* Data Structure        */
 /*=======================*/
 
@@ -62,11 +66,19 @@ typedef struct fram_footer_T
 } __attribute__((packed)) fram_footer_t;
 
 
+typedef struct fram_code_T
+{
+    uint16_t crc16;
+    uint16_t code_section[0x30B];
+}__attribute__((packed)) fram_code_t;
+
+
 typedef struct fram_data_T
 {
     fram_header_t header;
     fram_tables_t data;
     fram_footer_t footer;
+    fram_code_t   code;
 }__attribute__((packed)) fram_data_t;
 
 

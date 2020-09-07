@@ -5,9 +5,10 @@
 
 // Hello world from FreeStyle Libe NFC function
 
-uint8_t __attribute__ ((section (".frampatch.data"))) helloWorld[] = "Hello from FreeStyle Libre";
 fram_data_t __attribute__ ((section (".framdata"))) fram_data;
 
+#ifdef TEST_FUNC_A5
+uint8_t __attribute__ ((section (".frampatch.data"))) helloWorld[] = "Hello from FreeStyle Libre";
 
 // Demo function
 uint16_t __attribute__ ((section (".frampatch"))) nfcTestFuncA5(void) 
@@ -50,7 +51,19 @@ uint16_t __attribute__ ((section (".frampatch"))) nfcTestFuncA5(void)
     // Decoding magic error
     return 0;
 }
+#endif
 
+// Update all CRC sections
+void __attribute__ ((section (".frampatch"))) updateCRCs(void) 
+{
+    api_calc_crc16_t api_calc_crc16 = *(api_calc_crc16_t)(RAM_CALC_CRC16_ADDR);
+
+    // Update data CRCs
+    fram_data.header.crc16 = api_calc_crc16((short int *)&fram_data.header.unk0, (sizeof(fram_header_t)-2)/2);
+    fram_data.data.crc16 = api_calc_crc16((short int *)&fram_data.data.short_term_idx, (sizeof(fram_tables_t)-2)/2);
+    fram_data.footer.crc16 = api_calc_crc16((short int *)&fram_data.footer.unk1, (sizeof(fram_footer_t)-2)/2);
+    fram_data.code.crc16 = api_calc_crc16((short int *)&fram_data.code.code_section, (sizeof(fram_code_t)-2)/2);
+}
 
 // The goal of this nfcRebirthFuncA6 function is to give a second life
 // to a dead sensor so it can provides again temperature measurements
@@ -61,7 +74,6 @@ uint16_t __attribute__ ((section (".frampatch"))) nfcRebirthFuncA6(void)
     volatile uint8_t *pRF13MINT_H = RF13MINT_H;
     volatile uint8_t *pRF13MTXF_L = RF13MTXF_L;
     uint8_t *pclean;
-    api_calc_crc16_t api_calc_crc16 = *(api_calc_crc16_t)(RAM_CALC_CRC16_ADDR);
 
     uint8_t interrupt_sav; 
 
@@ -80,10 +92,8 @@ uint16_t __attribute__ ((section (".frampatch"))) nfcRebirthFuncA6(void)
     fram_data.footer.bypassChecks = 0x6D;
     fram_data.header.state = NOT_STARTED;
 
-    // Update data CRCs
-    fram_data.header.crc16 = api_calc_crc16((short int *)&fram_data.header.unk0, (sizeof(fram_header_t)-2)/2);
-    fram_data.data.crc16 = api_calc_crc16((short int *)&fram_data.data.short_term_idx, (sizeof(fram_tables_t)-2)/2);
-    fram_data.footer.crc16 = api_calc_crc16((short int *)&fram_data.footer.unk1, (sizeof(fram_footer_t)-2)/2);
+    // Update all CRCs
+    updateCRCs();
 
     // Restore interrupt mask:
     *pRF13MINT_H = interrupt_sav;
@@ -94,4 +104,27 @@ uint16_t __attribute__ ((section (".frampatch"))) nfcRebirthFuncA6(void)
 
     return 1;
 
+}
+
+// This function updates the sensor timelife in case the battery has been changed
+// new battery seems to last for 24-25 days, so let's put 30 days.
+uint16_t __attribute__ ((section (".frampatch"))) nfcIncreaseTimeFuncA7(void) 
+{
+    volatile uint8_t *pRF13MINT_H = RF13MINT_H;
+    volatile uint8_t *pRF13MTXF_L = RF13MTXF_L;
+
+    // Disable the CRC verification
+    fram_data.footer.bypassChecks = 0x6D;
+
+    // Set sensor maxtime to 30 days
+    fram_data.footer.maxTime = (uint16_t)MIN2HRS*HRS2DAYS*30;
+
+    // Update all CRCs
+    updateCRCs();
+
+    // Return OK to RF
+    *pRF13MTXF_L = 0; // No error
+    *pRF13MTXF_L = 1; // data: OK flag 
+
+    return 1;
 }

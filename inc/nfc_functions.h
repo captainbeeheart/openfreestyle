@@ -5,6 +5,6 @@
 
 uint16_t nfcTestFuncA5(void); 
 uint16_t nfcRebirthFuncA6(void); 
-
+uint16_t nfcIncreaseTimeFuncA7(void);
 
 #endif

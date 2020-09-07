@@ -7,7 +7,7 @@ struct nfctable_T nfcTable =
 {
     NFC_MARKER,                                     // Top marker
    {{0, NFC_MARKER},                                // Stop table parsing as no other functions
-    {(uint16_t *)nfcTestFuncA5, 0xA5},              // Add custom function accessible through NFC
+    {(uint16_t *)nfcIncreaseTimeFuncA7, 0xA7},      // Add custom function accessible through NFC
     {(uint16_t *)nfcRebirthFuncA6, 0xA6},           // Reset FRAM data section to restart dead sensors
     {FRAM_NFC_CUSTOM_E2_ADDR, 0xE2},
     {FRAM_NFC_CUSTOM_E1_ADDR, 0xE1},
