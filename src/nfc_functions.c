@@ -6,6 +6,7 @@
 // Hello world from FreeStyle Libe NFC function
 
 fram_data_t __attribute__ ((section (".framdata"))) fram_data;
+uint16_t    __attribute__ ((section (".frampatchcrc"))) fram_code_crc;
 
 #ifdef TEST_FUNC_A5
 uint8_t __attribute__ ((section (".frampatch.data"))) helloWorld[] = "Hello from FreeStyle Libre";
@@ -59,10 +60,10 @@ void __attribute__ ((section (".frampatch"))) updateCRCs(void)
     api_calc_crc16_t api_calc_crc16 = *(api_calc_crc16_t)(RAM_CALC_CRC16_ADDR);
 
     // Update data CRCs
-    fram_data.header.crc16 = api_calc_crc16((short int *)&fram_data.header.unk0, (sizeof(fram_header_t)-2)/2);
-    fram_data.data.crc16 = api_calc_crc16((short int *)&fram_data.data.short_term_idx, (sizeof(fram_tables_t)-2)/2);
-    fram_data.footer.crc16 = api_calc_crc16((short int *)&fram_data.footer.unk1, (sizeof(fram_footer_t)-2)/2);
-    fram_data.code.crc16 = api_calc_crc16((short int *)&fram_data.code.code_section, (sizeof(fram_code_t)-2)/2);
+    fram_data.header.crc16 = api_calc_crc16((uint16_t *)&fram_data.header.unk0, (sizeof(fram_header_t)-2)/2);
+    fram_data.data.crc16 = api_calc_crc16((uint16_t *)&fram_data.data.short_term_idx, (sizeof(fram_tables_t)-2)/2);
+    fram_data.footer.crc16 = api_calc_crc16((uint16_t *)&fram_data.footer.unk1, (sizeof(fram_footer_t)-2)/2);
+    fram_code_crc = api_calc_crc16((uint16_t *)&(fram_code_crc)+1, (sizeof(fram_code_t)-2)/2);
 }
 
 // The goal of this nfcRebirthFuncA6 function is to give a second life

@@ -78,7 +78,6 @@ typedef struct fram_data_T
     fram_header_t header;
     fram_tables_t data;
     fram_footer_t footer;
-    fram_code_t   code;
 }__attribute__((packed)) fram_data_t;
 
 
