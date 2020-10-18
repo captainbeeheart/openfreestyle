@@ -2,7 +2,7 @@
 #include "freestylelibre_api.h"
 
 #define NUMBER_OF_PATCHES 3
-#define TABLE_CHECKSUM  (uint16_t)(NUMBER_OF_PATCHES + 0x0014 + 0xFC50 + 0x0025 + 0xFC9A /*+ 0x001D + (uint16_t)patch_cal*/)
+#define TABLE_CHECKSUM  (uint16_t)(NUMBER_OF_PATCHES + 0x0019+ 0xFC20+ 0x0014 + 0xFC50 + 0x0025 + 0xFC9A /*+ 0x001D + (uint16_t)patch_cal*/)
 
 __attribute__ ((section (".frampatchtable")))
 struct patchtable_T patchTable =
