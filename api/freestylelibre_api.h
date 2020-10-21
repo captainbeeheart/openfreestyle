@@ -24,7 +24,10 @@ typedef struct measure_T
 typedef struct fram_header_T
 {
     uint16_t crc16;
-    uint16_t unk0;
+//    uint16_t unk0;
+    uint16_t calDataAndEOLindex; // bitfield: 0...2: calibration data i1
+                                 //           3 - 12: calibration data i2
+                                 //          13 - 15: index of EOL data (3 byte entries)
     uint8_t  state;
     uint8_t  warmupFlag;
     uint8_t  endState1;
@@ -49,20 +52,28 @@ typedef struct fram_tables_T
 typedef struct fram_footer_T
 {
     uint16_t crc16;
-    uint8_t unk1;
-    uint8_t countryCode;
+//    uint8_t unk1;
+    uint8_t countryCode_lower;
+    uint8_t countryCode_higher;
     uint8_t unk3;
     uint8_t unk4;
     uint16_t maxTime;
     uint8_t unk6;
-    uint8_t unk7;
+//    uint8_t unk7;
+    uint8_t ADC_IRQSync;
     uint8_t calibrationAverage;
     uint8_t unk8;
     uint8_t measureDeltaThreshold;
     uint8_t unk9;
     uint8_t bypassChecks;
-    uint8_t unkData[7];
-    uint16_t unk10;
+ //   uint8_t unkData[7];
+ //   uint16_t unk10;
+    uint8_t lockTableFlag;
+    uint8_t calibrationBitfield[8]; // bitfield: calibration data i3, offset 0x0, length 0x8
+                                    //                            i4, 0x8, 0xe
+                                    //                        neg i3, 0x21, 0x1
+                                    //                            i5, 0x28, 0xc
+                                    //                            i6, 0x34, 0xc
 } __attribute__((packed)) fram_footer_t;
 
 
